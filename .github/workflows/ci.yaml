@@ -1,0 +1,38 @@
+# .github/workflows/ci-cd-user-service.yml
+name: User Service CI/CD
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_REPO: "yaswanthmitta"
+  IMAGE_NAME: multiapp-user-management-go
+
+jobs:
+  build-and-push-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          # Build the image from the 'app' directory, specifying the Dockerfile path
+          docker build -t ${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest -f ./app/Dockerfile ./app
+          docker build -t ${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f ./app/Dockerfile ./app
+      
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
