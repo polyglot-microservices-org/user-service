@@ -1,0 +1,20 @@
+name: CD - Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'k8s/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -fR k8s/
