@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: yaswanthmitta/multiapp-user-management-go:486d61816dd5f35e86225036b28ce5718a6772f3
+          image: yaswanthmitta/multiapp-user-management-go:7afdc1f9c3ae4735a3e122a916a9bfe38661b178
           ports:
             - containerPort: 5000
           env:
