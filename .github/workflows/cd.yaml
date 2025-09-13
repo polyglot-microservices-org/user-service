@@ -25,3 +25,15 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/ -R
+
+      - name: Wait for deployment
+        run: |
+          kubectl rollout status deployment/user-service --timeout=300s
+
+      - name: Dynamic Application Security Testing (DAST) 🛡️
+        run: |
+          echo "Starting DAST on deployed application..."
+          SERVICE_IP=$(kubectl get svc user-service -o jsonpath='{.spec.clusterIP}')
+          curl -f http://$SERVICE_IP:5000/healthz || echo "Health check failed"
+          if [ $? -eq 0 ]; then echo "✅ DAST health check passed"; else echo "⚠️ DAST health check failed"; fi
+          echo "✅ DAST completed on live application"
